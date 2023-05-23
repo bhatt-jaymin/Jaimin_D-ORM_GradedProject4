@@ -2,7 +2,7 @@
 
 -- 1) You are required to create tables for supplier,customer,category,product,supplier_pricing,order,rating to store the data for the E-commerce with the schema definition given below.
 
--- create database Ecommerce;
+create database Ecommerce;
 use Ecommerce;
 
 -- Create supplier table
