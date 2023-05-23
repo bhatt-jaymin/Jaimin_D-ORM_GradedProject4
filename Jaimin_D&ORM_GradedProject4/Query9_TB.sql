@@ -1,11 +1,12 @@
 -- 9)Create a stored procedure to display supplier id, name, rating and Type_of_Service. For Type_of_Service, If rating =5, print “Excellent Service”,If rating >4 print “Good Service”, If rating >2 print “Average Service” else print “Poor Service”.
 
+
 DELIMITER //
 
 CREATE PROCEDURE GetSupplierServiceRatings()
 BEGIN
     SELECT
-        S.SUPP_NAME,
+        SUP.SUPP_NAME,
         SP_RO_2.*,
         CASE
             WHEN AverageRating = 5 THEN 'Excellent Service'
@@ -14,31 +15,31 @@ BEGIN
             ELSE 'Poor Service'
         END AS TypeOfService
     FROM
-        supplier S
+        supplier SUP
     INNER JOIN (
         SELECT
             SUPP_ID,
             AVG(RAT_RATSTARS) AS AverageRating
         FROM (
             SELECT
-                SP.SUPP_ID,
-                RO.ORD_ID,
-                RO.RAT_RATSTARS
+                SUP.SUPP_ID,
+                RAT.ORD_ID,
+                RAT.RAT_RATSTARS
             FROM
-                supplier_pricing SP
+                supplier_pricing SUP
             INNER JOIN (
                 SELECT
-                    O.ORD_ID,
-                    O.PRICING_ID,
-                    R.RAT_RATSTARS
+                    ORD.ORD_ID,
+                    ORD.PRICING_ID,
+                    RAT.RAT_RATSTARS
                 FROM
-                    orders O
-                INNER JOIN rating R ON O.ORD_ID = R.ORD_ID
-            ) AS RO ON SP.PRICING_ID = RO.PRICING_ID
-        ) AS SP_RO
+                    orders ORD
+                INNER JOIN rating RAT ON ORD.ORD_ID = RAT.ORD_ID
+            ) AS RATORD ON SUP.PRICING_ID = RATORD.PRICING_ID
+        ) AS SUP_RATORD
         GROUP BY
             SUPP_ID
-    ) AS SP_RO_2 ON S.SUPP_ID = SP_RO_2.SUPP_ID;
+    ) AS SUP_RATORD_2 ON SUP.SUPP_ID = SUP_RATORD_2.SUPP_ID;
 END //
 
 DELIMITER ;
