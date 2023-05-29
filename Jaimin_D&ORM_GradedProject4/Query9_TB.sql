@@ -5,8 +5,9 @@ DELIMITER //
 
 CREATE PROCEDURE GetSupplierServiceRatings()
 BEGIN
+
     SELECT
-        SUP.SUPP_NAME,
+        S.SUPP_NAME,
         SP_RO_2.*,
         CASE
             WHEN AverageRating = 5 THEN 'Excellent Service'
@@ -15,31 +16,31 @@ BEGIN
             ELSE 'Poor Service'
         END AS TypeOfService
     FROM
-        supplier SUP
+        supplier S
     INNER JOIN (
         SELECT
             SUPP_ID,
             AVG(RAT_RATSTARS) AS AverageRating
         FROM (
             SELECT
-                SUP.SUPP_ID,
-                RAT.ORD_ID,
-                RAT.RAT_RATSTARS
+                SP.SUPP_ID,
+                RO.ORD_ID,
+                RO.RAT_RATSTARS
             FROM
-                supplier_pricing SUP
+                supplier_pricing SP
             INNER JOIN (
                 SELECT
-                    ORD.ORD_ID,
-                    ORD.PRICING_ID,
-                    RAT.RAT_RATSTARS
+                    O.ORD_ID,
+                    O.PRICING_ID,
+                    R.RAT_RATSTARS
                 FROM
-                    orders ORD
-                INNER JOIN rating RAT ON ORD.ORD_ID = RAT.ORD_ID
-            ) AS RATORD ON SUP.PRICING_ID = RATORD.PRICING_ID
-        ) AS SUP_RATORD
+                    `orders` O
+                INNER JOIN rating R ON O.ORD_ID = R.ORD_ID
+            ) AS RO ON SP.PRICING_ID = RO.PRICING_ID
+        ) AS SP_RO
         GROUP BY
             SUPP_ID
-    ) AS SUP_RATORD_2 ON SUP.SUPP_ID = SUP_RATORD_2.SUPP_ID;
+    ) AS SP_RO_2 ON S.SUPP_ID = SP_RO_2.SUPP_ID;
 END //
 
 DELIMITER ;
